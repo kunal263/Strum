@@ -1,12 +1,13 @@
 from datetime import datetime
 
-from flask import Flask
+from flask import Flask , jsonify
 from flask_restful import Resource, Api , request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature , SignatureExpired)
 from flask_httpauth import HTTPBasicAuth
 
+auth= HTTPBasicAuth()
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///taskdatabase.sqlite3'
 db=SQLAlchemy(app)
@@ -22,7 +23,7 @@ class User(db.Model):
 
     def generate_auth_token(self, expiration=600):
         s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
-        return s.dumps({'id': self.id})
+        return s.dumps({'id': self.userID})
 
     @staticmethod
     def verify_auth_token(token):
@@ -58,10 +59,20 @@ class Tasks(db.Model):
 @app.route('/api/token')
 @auth.login_required
 def get_auth_token():
-    token = g.user.generate_auth_token()
+    token = g.User.generate_auth_token()
     return jsonify({ 'token': token.decode('ascii') })
 
-
+@auth.verify_password
+def verify_password(username_or_token, password):
+    # first try to authenticate by token
+    user = User.verify_auth_token(username_or_token)
+    if not user:
+        # try to authenticate with username/password
+        user = User.query.filter_by(username = username_or_token).first()
+        if not user or not user.verify_password(password):
+            return False
+    g.user = user
+    return True
 
 
 
