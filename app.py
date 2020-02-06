@@ -3,8 +3,6 @@ from flask_restful import request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 from sqlalchemy import engine
-
-from models import *
 import random
 
 
@@ -15,6 +13,7 @@ app.config['SECRET_KEY']='secret'
 db=SQLAlchemy(app)
 auth=HTTPBasicAuth()
 
+from models import db
 
 
 @app.route('/api/users', methods = ['POST'])
