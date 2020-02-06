@@ -6,6 +6,7 @@ from sqlalchemy import engine
 import random
 
 
+
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///taskdatabase.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
@@ -13,7 +14,7 @@ app.config['SECRET_KEY']='secret'
 db=SQLAlchemy(app)
 auth=HTTPBasicAuth()
 
-from models import db
+from models import *
 
 
 @app.route('/api/users', methods = ['POST'])
