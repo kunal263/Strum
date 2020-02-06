@@ -149,15 +149,6 @@ def get_projects():
     return jsonify({'projects':projectnames,'admins':users})
 
 
-@app.route('/api/getdetails')
-@auth.login_required
-def get_details():
-    projectname=request.json.get('projectname')
-    projectid=Project.query.filter_by(name=projectname).first().ProjID
-    members=[]
-    members=session.query(User).join(UserProject,User.id=UserProject.UserID).filter(ProjID=projectid).all().username
-
-    return jsonify({'members':members})
 #@app.route('/api/getprojectdetails')
 #@auth.login_required
 #def get_details():
