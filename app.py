@@ -1,20 +1,11 @@
-from flask import Flask, jsonify, g
+from flask import Flask, jsonify, g ,url_for
 from flask_restful import request, abort
-from flask_sqlalchemy import SQLAlchemy
-from flask_httpauth import HTTPBasicAuth
-from sqlalchemy import engine
 import random
-
-
-
-app=Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///taskdatabase.sqlite3'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
-app.config['SECRET_KEY']='secret'
-db=SQLAlchemy(app)
-auth=HTTPBasicAuth()
-
 from models import *
+
+
+
+
 
 
 @app.route('/api/users', methods = ['POST'])
@@ -22,14 +13,14 @@ def new_user():
     username = request.json.get('username')
     password = request.json.get('password')
     if username is None or password is None:
-        abort(400) # missing arguments
-    if User.query.filter_by(username = username).first() is not None:
-        abort(400)    # existing user
-    user = User(username = username)
+        abort(400)  # missing arguments
+    if User.query.filter_by(username=username).first() is not None:
+        abort(400)  # existing user
+    user = User(username=username)
     user.hash_password(password)
     db.session.add(user)
     db.session.commit()
-    return jsonify({ 'username': user.username }), 201
+    return jsonify({'username': user.username}), 201
 
 
 
@@ -58,17 +49,19 @@ def verify_password(username_or_token, password):
 def add_project():
     userid=g.user.id
     projectname=request.json.get('projectname')
+    description=request.json.get('description')
     project=Project(name = projectname)
     projectid=random.randint(1,1001)
     project.ProjID=projectid
     project.adminID=userid
+    project.description=description
     pumap=UserProject(UserID=userid)
     pumap.ProjID=projectid
     db.session.add(pumap)
     db.session.add(project)
     db.session.commit()
 
-    return jsonify({'projectname':projectname,'AdminID':userid})
+    return jsonify({'projectname':projectname,'AdminID':userid,'description':description})
 
 @app.route('/api/addusers',methods = ['POST'])
 @auth.login_required
@@ -93,13 +86,9 @@ def add_users():
 def add_tasks():
     taskname=request.json.get('taskname')
     userid=g.user.id
-    task=Tasks(name=taskname)
-    taskid=random.randint(1,1001)
-    task.taskID=taskid
-    tumap=UserTask(UserID=userid)
-    tumap.taskID=taskid
+    task=PersonalTasks(name=taskname)
+    task.UserID=userid
     db.session.add(task)
-    db.session.add(tumap)
     db.session.commit()
 
     return jsonify({'task':taskname})
@@ -111,6 +100,7 @@ def add_ptasks():
     userid=User.query.filter_by(username=username).first().id
     taskname=request.json.get('taskname')
     projectname=request.json.get('projectname')
+    description=request.json.get('')
     task=Tasks(name=taskname)
     taskid=random.randint(1,1001)
     task.taskID=taskid
@@ -136,6 +126,7 @@ def get_projects():
     projectnames=[]
     admins=[]
     users=[]
+    descriptions=[]
     projects=UserProject.query.filter_by(UserID=userid).all()
     if projects is None:
         abort(400)  #no projecs
@@ -149,9 +140,8 @@ def get_projects():
     return jsonify({'projects':projectnames,'admins':users})
 
 
-#@app.route('/api/getprojectdetails')
-#@auth.login_required
-#def get_details():
+
+
 
 
 

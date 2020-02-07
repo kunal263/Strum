@@ -1,9 +1,17 @@
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature , SignatureExpired)
 from passlib.apps import custom_app_context as pwd_context
-from app import db
-from app import app
+from flask_httpauth import HTTPBasicAuth
 
+
+app=Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///taskdatabase.sqlite3'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
+app.config['SECRET_KEY']='secret'
+db=SQLAlchemy(app)
+auth=HTTPBasicAuth()
 
 
 
@@ -45,6 +53,7 @@ class Project(db.Model):
     ProjID=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(50),index=True)
     adminID=db.Column(db.Integer,ForeignKey(User.id))
+    description=db.Column(db.String(30))
 
 
 class UserProject(db.Model):
@@ -57,7 +66,6 @@ class UserProject(db.Model):
 class Tasks(db.Model):
     __tablename__ = 'tasks'
     taskID=db.Column(db.Integer,primary_key=True)
-    description=db.Column(db.String(50))
     name=db.Column(db.String(30))
     deadline=db.Column(db.DateTime)
     priority=db.Column(db.String(30))
@@ -76,5 +84,4 @@ class PersonalTasks(db.Model):
     UserID=db.Column(db.Integer,ForeignKey(User.id))
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(20))
-    description=db.Column(db.String(50))
 
