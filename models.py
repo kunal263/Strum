@@ -21,6 +21,7 @@ class User(db.Model):
     username = db.Column(db.String(32), index = True)
     password_hash = db.Column(db.String(128))
     email=db.Column(db.String(30))
+    #profile_pic=db.Column(db.String(200)
 
     def hash_password(self, password):
         self.password_hash = pwd_context.encrypt(password)
