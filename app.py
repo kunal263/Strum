@@ -107,15 +107,11 @@ def add_ptasks():
     task.taskID=taskid
     #task.deadline=deadline
     task.priority=priority
+    task.ProjID=projectid
+    task.UserID=userid
     if Project.query.filter_by(ProjID=projectid).first() is None:
         abort(400)
-    ptmap=ProjectTask(ProjID=projectid)
-    ptmap.taskID=taskid
-    tumap=UserTask(UserID=userid)
-    tumap.taskID=taskid
     db.session.add(task)
-    db.session.add(ptmap)
-    db.session.add(tumap)
     db.session.commit()
 
     return jsonify({'taskid':taskid,'task':taskname})
@@ -140,19 +136,31 @@ def get_projects():
 
     return jsonify({'projects':info})
 
-#@app.route('/api/getdetails')
-#@auth.login_required
-#def get_details():
- #   ids=[]
-  #  tasks=[]
-   # projectid=request.json.get('projectid')
-    #description=Project.query.filter_by(ProjID=projectid).first().description
-    #userids=UserProject.query.filter_by(ProjID=projectid).all()
-    #for userid in userids:
-     #   name=User.query.filter_by(id=userid.UserID).first().username
-      #  ids.append([userid.UserID,name])
-    #taskinfo=db.session.query(Tasks,Project).join(Tasks).all()
-    #print(taskinfo)
+@app.route('/api/getdetails')
+@auth.login_required
+def get_details():
+    users=[]
+    taskinfo=[]
+    projectid=request.json.get('projectid')
+    description=Project.query.filter_by(ProjID=projectid).first().description
+    userids=UserProject.query.filter_by(ProjID=projectid).all()
+    tasks=Tasks.query.filter_by(ProjID=projectid).all()
+    for id in userids:
+        userid=id.UserID
+        uname=User.query.filter_by(id=id.UserID).first().username
+        users.append([id.UserID,uname])
+    for task in tasks:
+        tname=task.name
+        taskid = task.taskID
+        priority=task.priority
+        taskinfo.append([tname,taskid,priority])
+
+
+    return jsonify({'users':users,'tasks':taskinfo})
+
+
+
+
 
 
 

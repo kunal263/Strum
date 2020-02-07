@@ -23,7 +23,6 @@ class User(db.Model):
     email=db.Column(db.String(30))
     #profile_pic=db.Column(db.String(200)
     projects=db.relationship('Project', secondary='user_project' ,backref='users')
-    tasks=db.relationship('Tasks', secondary='user_task', backref='users')
 
 
     def hash_password(self, password):
@@ -58,7 +57,6 @@ class Project(db.Model):
     name=db.Column(db.String(50),index=True)
     adminID=db.Column(db.Integer,ForeignKey(User.id))
     description=db.Column(db.String(30))
-    tasks=db.relationship('Tasks',secondary='project_task',backref='projects')
 
 
 
@@ -77,18 +75,9 @@ class Tasks(db.Model):
     name=db.Column(db.String(30))
     deadline=db.Column(db.DateTime)
     priority=db.Column(db.String(30))
-
-class ProjectTask(db.Model):
-    __tablename__='project_task'
     ProjID=db.Column(db.Integer,ForeignKey(Project.ProjID))
-    taskID=db.Column(db.Integer,ForeignKey(Tasks.taskID))
-    id=db.Column(db.Integer,primary_key=True)
-
-class UserTask(db.Model):
-    __tablename__='user_task'
     UserID=db.Column(db.Integer,ForeignKey(User.id))
-    taskID=db.Column(db.Integer,ForeignKey(Tasks.taskID))
-    id=db.Column(db.Integer,primary_key=True)
+
 
 class PersonalTasks(db.Model):
     UserID=db.Column(db.Integer,ForeignKey(User.id))
