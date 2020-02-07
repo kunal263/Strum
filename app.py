@@ -1,6 +1,9 @@
-from flask import Flask, jsonify, g ,url_for
+from flask import Flask, jsonify, g, url_for
 from flask_restful import request, abort
 import random
+
+from sqlalchemy.orm import session, Session
+
 from models import *
 
 
@@ -61,7 +64,7 @@ def add_project():
     db.session.add(project)
     db.session.commit()
 
-    return jsonify({'projectid':projectid,projectname':projectname,'AdminID':userid,'description':description})
+    return jsonify({'projectid':projectid,'projectname':projectname,'AdminID':userid,'description':description})
 
 @app.route('/api/addusers',methods = ['POST'])
 @auth.login_required
@@ -137,22 +140,31 @@ def get_projects():
 
     return jsonify({'projects':info})
 
-@app.route('/api/getdetails')
+#@app.route('/api/getdetails')
+#@auth.login_required
+#def get_details():
+ #   ids=[]
+  #  tasks=[]
+   # projectid=request.json.get('projectid')
+    #description=Project.query.filter_by(ProjID=projectid).first().description
+    #userids=UserProject.query.filter_by(ProjID=projectid).all()
+    #for userid in userids:
+     #   name=User.query.filter_by(id=userid.UserID).first().username
+      #  ids.append([userid.UserID,name])
+    #taskinfo=db.session.query(Tasks,Project).join(Tasks).all()
+    #print(taskinfo)
+
+
+
+
+
+
+
+    #return jsonify({'description':description,'users':ids,'tasks':tasks})
+
+@app.route('/api/gettaskdetails')
 @auth.login_required
-def get_details():
-    ids=[]
-    projectid=request.json.get('projectid')
-    description=Project.query.filter_by(ProjID=projectid).first().description
-    userids=UserProject.query.filter_by(ProjID=projectid).all()
-    for id in userids:
-        ids.append(id.UserID)
-
-
-    return jsonify({'description':description,'users':ids})
-
-@app.route('/api/gettasks')
-@auth.login_required
-def get_tasks():
+def get_task_details():
     taskid=request.json.get('taskid')
     name=Tasks.query.filter_by(taskID=taskid).first().name
     deadline=Tasks.query.filter_by(taskID=taskid).first().deadline
@@ -161,12 +173,10 @@ def get_tasks():
 
 @app.route('/api/getusers')
 @auth.login_required
-def get_users():
-    userid=request.json.get('userid')
+def get_user():
+    userid=g.user.id
     username=User.query.filter_by(id=userid).first().username
-    return jsonify({'name':username})
-
-
+    return jsonify({'name':username,'id':userid})
 
 
 
