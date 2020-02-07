@@ -61,7 +61,7 @@ def add_project():
     db.session.add(project)
     db.session.commit()
 
-    return jsonify({'projectname':projectname,'AdminID':userid,'description':description})
+    return jsonify({'projectid':projectid,projectname':projectname,'AdminID':userid,'description':description})
 
 @app.route('/api/addusers',methods = ['POST'])
 @auth.login_required
@@ -165,6 +165,7 @@ def get_users():
     userid=request.json.get('userid')
     username=User.query.filter_by(id=userid).first().username
     return jsonify({'name':username})
+
 
 
 
