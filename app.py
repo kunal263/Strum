@@ -15,12 +15,14 @@ from models import *
 def new_user():
     username = request.json.get('username')
     password = request.json.get('password')
+    profilepic = request.json.get('profileurl')
     if username is None or password is None:
-        return jsonify({message:'username already exists'})  # missing arguments
+        return jsonify({'message':'username already exists'})  # missing arguments
     if User.query.filter_by(username=username).first() is not None:
         abort(400)  # existing user
     user = User(username=username)
     user.hash_password(password)
+    user.profile_pic=profilepic
     db.session.add(user)
     db.session.commit()
     return jsonify({'username': user.username}), 201
@@ -156,7 +158,7 @@ def get_details():
         taskinfo.append([tname,taskid,priority])
 
 
-    return jsonify({'users':users,'tasks':taskinfo})
+    return jsonify({'description':description,'users':users,'tasks':taskinfo})
 
 
 
@@ -177,14 +179,14 @@ def get_task_details():
     name=Tasks.query.filter_by(taskID=taskid).first().name
     deadline=Tasks.query.filter_by(taskID=taskid).first().deadline
     priority=Tasks.query.filter_by(taskID=taskid).first().priority
-    return jsonify({'name':name , 'deadline' : deadline , 'priority' : priority})
+    return jsonify({'taskname':name , 'deadline' : deadline , 'priority' : priority})
 
 @app.route('/api/getusers')
 @auth.login_required
 def get_user():
     userid=g.user.id
     username=User.query.filter_by(id=userid).first().username
-    return jsonify({'name':username,'id':userid})
+    return jsonify({'username':username,'userid':userid})
 
 
 

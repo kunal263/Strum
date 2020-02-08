@@ -21,7 +21,7 @@ class User(db.Model):
     username = db.Column(db.String(32), index = True)
     password_hash = db.Column(db.String(128))
     email=db.Column(db.String(30))
-    #profile_pic=db.Column(db.String(200)
+    profile_pic=db.Column(db.String(200))
     projects=db.relationship('Project', secondary='user_project' ,backref='users')
 
 
@@ -77,6 +77,7 @@ class Tasks(db.Model):
     priority=db.Column(db.String(30))
     ProjID=db.Column(db.Integer,ForeignKey(Project.ProjID))
     UserID=db.Column(db.Integer,ForeignKey(User.id))
+    status=db.String(db.String(20))
 
 
 class PersonalTasks(db.Model):
