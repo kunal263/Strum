@@ -186,7 +186,8 @@ def get_task_details():
 def get_user():
     userid=g.user.id
     username=User.query.filter_by(id=userid).first().username
-    return jsonify({'username':username,'userid':userid})
+    profileurl=User.query.filter_by(id=userid).first().profile_pic
+    return jsonify({'username':username,'userid':userid,'profileurl':profileurl})
 
 
 
