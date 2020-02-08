@@ -130,11 +130,11 @@ def get_projects():
         abort(400)  #no projects
     for project in projects:
         temp_id=project.ProjID
-        id=temp_id
+        projectid=temp_id
         projectname=Project.query.filter_by(ProjID=temp_id).first().name
         admin=Project.query.filter_by(ProjID=temp_id).first().adminID
         adminname=User.query.filter_by(id=admin).first().username
-        info.append([id,projectname,adminname])
+        info.append({'projectid':projectid,'projectname':projectname,'adminname':adminname})
 
     return jsonify({'projects':info})
 
@@ -188,6 +188,7 @@ def get_user():
     username=User.query.filter_by(id=userid).first().username
     profileurl=User.query.filter_by(id=userid).first().profile_pic
     return jsonify({'username':username,'userid':userid,'profileurl':profileurl})
+
 
 
 
