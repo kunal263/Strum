@@ -155,7 +155,7 @@ def get_details():
         tname=task.name
         taskid = task.taskID
         priority=task.priority
-        taskinfo.append([tname,taskid,priority])
+        taskinfo.append({'taskname':tname,'taskid':taskid,'priority':priority})
 
 
     return jsonify({'description':description,'users':users,'tasks':taskinfo})
