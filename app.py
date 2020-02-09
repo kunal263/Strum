@@ -2,14 +2,15 @@ from flask import Flask, jsonify, g, url_for
 from flask_restful import request, abort
 import random
 import datetime
-
-
-
 from models import *
 
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
-
-
+sentry_sdk.init(
+    dsn="https://0abd06dd1d1346a885a45f2cd1acb02f@sentry.io/2380874",
+    integrations=[FlaskIntegration()]
+)
 
 
 @app.route('/api/users', methods = ['POST'])
@@ -118,7 +119,7 @@ def add_ptasks():
     db.session.add(task)
     db.session.commit()
 
-    return jsonify({'taskid':taskid,'task':taskname})
+    return jsonify({'taskid':taskid,'taskname':taskname})
 
 
 @app.route('/api/getprojects')
@@ -158,7 +159,8 @@ def get_details(projectid):
         taskid = task.taskID
         task_userid=task.UserID
         priority=task.priority
-        taskinfo.append({'taskname':tname,'taskid':taskid,'userid':task_userid,'priority':priority})
+        deadline=task.deadline
+        taskinfo.append({'taskname':tname,'taskid':taskid,'userid':task_userid,'priority':priority,'deadline':deadline})
 
 
     return jsonify({'description':description,'users':users,'tasks':taskinfo})
