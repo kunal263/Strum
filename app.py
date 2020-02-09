@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, g, url_for
 from flask_restful import request, abort
 import random
+import datetime
 
 
 
@@ -102,13 +103,13 @@ def add_ptasks():
     userid=request.json.get('userid')
     taskname=request.json.get('taskname')
     projectid=request.json.get('projectid')
-    #deadline=request.json.get('deadline')
+    deadline=request.json.get('deadline')
     priority=request.json.get('priority')
     task=Tasks(name=taskname)
     taskid=random.randint(1,1001)
     task.taskID=taskid
     task.status="ongoing"
-    #task.deadline=deadline
+    task.deadline=datetime.datetime.strptime(deadline,'%d-%m-%y').date()
     task.priority=priority
     task.ProjID=projectid
     task.UserID=userid

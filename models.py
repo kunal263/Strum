@@ -1,9 +1,10 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey , Date
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature , SignatureExpired)
 from passlib.apps import custom_app_context as pwd_context
 from flask_httpauth import HTTPBasicAuth
+from datetime import date
 
 
 app=Flask(__name__)
@@ -72,8 +73,8 @@ class UserProject(db.Model):
 class Tasks(db.Model):
     __tablename__ = 'tasks'
     taskID=db.Column(db.Integer,primary_key=True)
-    name=db.Column(db.String(30))
-    deadline=db.Column(db.DateTime)
+    name=db.Column(db.String(30),unique=True)
+    deadline=db.Column(db.Date,default=date.today())
     priority=db.Column(db.String(30))
     ProjID=db.Column(db.Integer,ForeignKey(Project.ProjID))
     UserID=db.Column(db.Integer,ForeignKey(User.id))
