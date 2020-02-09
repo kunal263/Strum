@@ -139,12 +139,11 @@ def get_projects():
 
     return jsonify({'projects':info})
 
-@app.route('/api/getdetails')
+@app.route('/api/<int:projectid>/getdetails')
 @auth.login_required
-def get_details():
+def get_details(projectid):
     users=[]
     taskinfo=[]
-    projectid=request.json.get('projectid')
     description=Project.query.filter_by(ProjID=projectid).first().description
     userids=UserProject.query.filter_by(ProjID=projectid).all()
     tasks=Tasks.query.filter_by(ProjID=projectid).all()
@@ -164,21 +163,9 @@ def get_details():
     return jsonify({'description':description,'users':users,'tasks':taskinfo})
 
 
-
-
-
-
-
-
-
-
-
-    #return jsonify({'description':description,'users':ids,'tasks':tasks})
-
-@app.route('/api/gettaskdetails')
+@app.route('/api/<int:taskid>/gettaskdetails')
 @auth.login_required
-def get_task_details():
-    taskid=request.json.get('taskid')
+def get_task_details(taskid):
     name=Tasks.query.filter_by(taskID=taskid).first().name
     deadline=Tasks.query.filter_by(taskID=taskid).first().deadline
     priority=Tasks.query.filter_by(taskID=taskid).first().priority
