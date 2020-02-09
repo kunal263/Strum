@@ -77,7 +77,7 @@ class Tasks(db.Model):
     priority=db.Column(db.String(30))
     ProjID=db.Column(db.Integer,ForeignKey(Project.ProjID))
     UserID=db.Column(db.Integer,ForeignKey(User.id))
-    status=db.String(db.String(20))
+    status=db.Column(db.String(20))
 
 
 class PersonalTasks(db.Model):

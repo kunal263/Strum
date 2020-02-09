@@ -2,7 +2,7 @@ from flask import Flask, jsonify, g, url_for
 from flask_restful import request, abort
 import random
 
-from sqlalchemy.orm import session, Session
+
 
 from models import *
 
@@ -17,7 +17,7 @@ def new_user():
     password = request.json.get('password')
     profilepic = request.json.get('profileurl')
     if username is None or password is None:
-        return jsonify({'message':'username already exists'})  # missing arguments
+        return jsonify({'message':'fill in the fieldsp'})  # missing arguments
     if User.query.filter_by(username=username).first() is not None:
         abort(400)  # existing user
     user = User(username=username)
@@ -107,6 +107,7 @@ def add_ptasks():
     task=Tasks(name=taskname)
     taskid=random.randint(1,1001)
     task.taskID=taskid
+    task.status="ongoing"
     #task.deadline=deadline
     task.priority=priority
     task.ProjID=projectid
@@ -150,12 +151,14 @@ def get_details():
     for id in userids:
         userid=id.UserID
         uname=User.query.filter_by(id=id.UserID).first().username
-        users.append([id.UserID,uname])
+        profileurl=User.query.filter_by(id=id.UserID).first().profile_pic
+        users.append({'userid':userid,'username':uname,'profileurl':profileurl})
     for task in tasks:
         tname=task.name
         taskid = task.taskID
+        task_userid=task.UserID
         priority=task.priority
-        taskinfo.append({'taskname':tname,'taskid':taskid,'priority':priority})
+        taskinfo.append({'taskname':tname,'taskid':taskid,'userid':task_userid,'priority':priority})
 
 
     return jsonify({'description':description,'users':users,'tasks':taskinfo})
@@ -188,6 +191,16 @@ def get_user():
     username=User.query.filter_by(id=userid).first().username
     profileurl=User.query.filter_by(id=userid).first().profile_pic
     return jsonify({'username':username,'userid':userid,'profileurl':profileurl})
+
+@app.route('/api/updatestatus',methods=['PUT'])
+@auth.login_required
+def update_status():
+    taskid=request.json.get('taskid')
+    new_status=request.json.get('status')
+    taskrow=Tasks.query.filter_by(taskID=taskid).first()
+    taskrow.status=new_status
+    db.session.commit()
+    return {'message':'status updated'}
 
 
 
