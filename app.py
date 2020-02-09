@@ -4,13 +4,6 @@ import random
 import datetime
 from models import *
 
-import sentry_sdk
-from sentry_sdk.integrations.flask import FlaskIntegration
-
-sentry_sdk.init(
-    dsn="https://0abd06dd1d1346a885a45f2cd1acb02f@sentry.io/2380874",
-    integrations=[FlaskIntegration()]
-)
 
 
 @app.route('/api/users', methods = ['POST'])
