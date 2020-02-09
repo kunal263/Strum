@@ -160,7 +160,8 @@ def get_details(projectid):
         task_userid=task.UserID
         priority=task.priority
         deadline=task.deadline
-        taskinfo.append({'taskname':tname,'taskid':taskid,'userid':task_userid,'priority':priority,'deadline':deadline})
+        status=task.status
+        taskinfo.append({'taskname':tname,'taskid':taskid,'userid':task_userid,'priority':priority,'deadline':deadline,'status':status})
 
 
     return jsonify({'description':description,'users':users,'tasks':taskinfo})
